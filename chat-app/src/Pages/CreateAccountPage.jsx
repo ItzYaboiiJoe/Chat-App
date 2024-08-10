@@ -1,26 +1,42 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { createUserWithEmailAndPassword } from "firebase/auth";
-import { auth, analytics } from "../firebase";
+import { auth, analytics, db } from "../firebase";
 import { logEvent } from "firebase/analytics";
+import { doc, setDoc } from "firebase/firestore";
 
 function CreateAccountPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [username, setUsername] = useState("");
   const [error, setError] = useState("");
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
 
-    createUserWithEmailAndPassword(auth, email, password)
-      .then((userCredential) => {
-        const user = userCredential.user;
-        console.log("Account created:", user);
-        logEvent(analytics, "sign_up", { method: "email" });
-      })
-      .catch((error) => {
-        setError(error.message);
+    try {
+      const userCredential = await createUserWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
+      const user = userCredential.user;
+
+      console.log("Account created:", user);
+      logEvent(analytics, "sign_up", { method: "email" });
+
+      await setDoc(doc(db, "users", user.uid), {
+        username: username,
+        email: user.email,
       });
+
+      console.log("User data stored in Firestore:", {
+        username,
+        email: user.email,
+      });
+    } catch (error) {
+      setError(error.message);
+    }
   };
 
   return (
@@ -28,6 +44,23 @@ function CreateAccountPage() {
       <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-sm">
         <h2 className="text-2xl font-bold text-center mb-6">Create Account</h2>
         <form onSubmit={handleSubmit}>
+          <div className="mb-4">
+            <label
+              className="block text-gray-700 text-sm font-bold mb-2"
+              htmlFor="username"
+            >
+              Username
+            </label>
+            <input
+              type="text"
+              id="username"
+              placeholder="Enter your username"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              required
+            />
+          </div>
           <div className="mb-4">
             <label
               className="block text-gray-700 text-sm font-bold mb-2"
