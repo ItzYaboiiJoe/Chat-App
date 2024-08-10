@@ -10,11 +10,15 @@ function CreateAccountPage() {
   const [password, setPassword] = useState("");
   const [username, setUsername] = useState("");
   const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
 
   const handleSubmit = async (event) => {
     event.preventDefault();
 
     try {
+      setError("");
+      setSuccess("");
+
       const userCredential = await createUserWithEmailAndPassword(
         auth,
         email,
@@ -34,6 +38,8 @@ function CreateAccountPage() {
         username,
         email: user.email,
       });
+
+      setSuccess("Account created successfully!");
     } catch (error) {
       setError(error.message);
     }
@@ -96,6 +102,7 @@ function CreateAccountPage() {
             />
           </div>
           {error && <p className="text-red-500 text-sm mb-4">{error}</p>}
+          {success && <p className="text-green-500 text-sm mb-4">{success}</p>}
           <div className="flex items-center justify-between">
             <button
               type="submit"

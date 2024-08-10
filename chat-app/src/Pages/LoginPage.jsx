@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth, analytics } from "../firebase";
 import { logEvent } from "firebase/analytics";
@@ -8,6 +8,7 @@ function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const navigate = useNavigate();
 
   useEffect(() => {
     logEvent(analytics, "login_page_view");
@@ -16,14 +17,22 @@ function LoginPage() {
   const handleSubmit = (event) => {
     event.preventDefault();
 
+    if (!email || !password) {
+      setError("Please enter both email and password.");
+      return;
+    }
+
     signInWithEmailAndPassword(auth, email, password)
       .then((userCredential) => {
         const user = userCredential.user;
         console.log("User signed in:", user);
         logEvent(analytics, "login", { method: "email" });
+        navigate("/chat-page");
       })
       .catch((error) => {
-        setError(error.message);
+        if (error.code === "auth/invalid-credential") {
+          setError("Incorrect email or password. Please try again.");
+        }
       });
   };
 
