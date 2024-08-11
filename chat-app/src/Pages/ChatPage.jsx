@@ -164,11 +164,11 @@ function ChatPage() {
   };
 
   return (
-    <div className="flex h-screen">
-      <div className="w-1/4 bg-gray-800 text-white p-3 flex flex-col">
+    <div className="flex flex-col md:flex-row h-screen">
+      <div className="w-full md:w-1/4 bg-gray-800 text-white p-3 flex flex-col">
         <div className="flex items-center justify-between mb-8">
           <div>
-            <h3 className="text-lg font-semibold">Welcome, {username} !</h3>
+            <h3 className="text-lg font-semibold">Welcome, {username}!</h3>
           </div>
           <button
             onClick={handleSignOutClick}
@@ -199,30 +199,32 @@ function ChatPage() {
 
         {selectedOption === "rooms" && (
           <div className="flex-grow flex flex-col">
-            <h2 className="text-xl font-semibold mb-3">Available Rooms</h2>
-            <ul className="flex-grow overflow-y-auto">
-              {availableRooms.map((room) => (
-                <li
-                  key={room.id}
-                  className={`p-3 mb-2 rounded-lg flex justify-between items-center cursor-pointer ${
-                    room.name === selectedRoom ? "bg-gray-700" : "bg-gray-900"
-                  } hover:bg-gray-700 transition-colors`}
-                  onClick={() => handleRoomClick(room)}
-                >
-                  <span>{room.name}</span>
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleDeleteRoomClick(room.id);
-                    }}
-                    className="text-red-500 hover:text-red-700 focus:outline-none"
+            <div className="flex-grow">
+              <h2 className="text-xl font-semibold mb-3">Available Rooms</h2>
+              <ul className="overflow-y-auto">
+                {availableRooms.map((room) => (
+                  <li
+                    key={room.id}
+                    className={`p-3 mb-2 rounded-lg flex justify-between items-center cursor-pointer ${
+                      room.name === selectedRoom ? "bg-gray-700" : "bg-gray-900"
+                    } hover:bg-gray-700 transition-colors`}
+                    onClick={() => handleRoomClick(room)}
                   >
-                    &times;
-                  </button>
-                </li>
-              ))}
-            </ul>
-            <div className="mt-4">
+                    <span>{room.name}</span>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleDeleteRoomClick(room.id);
+                      }}
+                      className="text-red-500 hover:text-red-700 focus:outline-none"
+                    >
+                      &times;
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            </div>
+            <div className="mt-auto">
               <input
                 type="text"
                 placeholder="New room name"
@@ -243,7 +245,7 @@ function ChatPage() {
         {selectedOption === "users" && (
           <div className="flex-grow flex flex-col">
             <h2 className="text-xl font-semibold mb-3">Available Users</h2>
-            <ul className="flex-grow overflow-y-auto">
+            <ul className="flex-grow overflow-y-auto max-h-40 md:max-h-80">
               {availableUsers.map((user) => (
                 <li
                   key={user.id}
@@ -258,7 +260,7 @@ function ChatPage() {
         )}
       </div>
 
-      <div className="w-3/4 flex flex-col">
+      <div className="w-full md:w-3/4 flex flex-col">
         {selectedRoom || selectedUser ? (
           <>
             <div className="bg-gray-100 p-4 border-b">
