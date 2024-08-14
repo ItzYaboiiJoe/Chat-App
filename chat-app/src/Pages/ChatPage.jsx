@@ -1,28 +1,21 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import {
-  doc,
-  onSnapshot,
-  updateDoc,
-  deleteField,
-  getDocs,
   collection,
+  onSnapshot,
+  getDocs,
   query,
   where,
 } from "firebase/firestore";
 import { db, auth } from "../firebase";
-import ConfirmationModal from "../Components/ConfirmationModal";
 import SignOutConfirmation from "../Components/SignOutConfirmation";
 
 function ChatPage() {
-  const [roomName, setRoomName] = useState("");
   const [availableRooms, setAvailableRooms] = useState([]);
   const [availableUsers, setAvailableUsers] = useState([]);
   const [selectedRoom, setSelectedRoom] = useState("");
   const [selectedUser, setSelectedUser] = useState(null);
-  const [isRoomModalOpen, setIsRoomModalOpen] = useState(false);
   const [isSignOutModalOpen, setIsSignOutModalOpen] = useState(false);
-  const [roomToDelete, setRoomToDelete] = useState(null);
   const [selectedOption, setSelectedOption] = useState("rooms");
   const [username, setUsername] = useState("");
   const navigate = useNavigate();
@@ -49,16 +42,14 @@ function ChatPage() {
 
   useEffect(() => {
     if (selectedOption === "rooms") {
-      const roomDocRef = doc(db, "chatrooms", "chatrooms");
+      const roomCollectionRef = collection(db, "chatrooms");
 
-      const unsubscribe = onSnapshot(roomDocRef, (docSnapshot) => {
-        if (docSnapshot.exists()) {
-          const data = docSnapshot.data();
-          const rooms = Object.entries(data)
-            .filter(([key]) => key.startsWith("room"))
-            .map(([key, value]) => ({ id: key, name: value }));
-          setAvailableRooms(rooms);
-        }
+      const unsubscribe = onSnapshot(roomCollectionRef, (querySnapshot) => {
+        const rooms = querySnapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        }));
+        setAvailableRooms(rooms);
       });
 
       return () => unsubscribe();
@@ -84,61 +75,13 @@ function ChatPage() {
   }, [selectedOption]);
 
   const handleRoomClick = (room) => {
-    setSelectedRoom(room.name);
+    setSelectedRoom(room.id);
     setSelectedUser(null);
   };
 
   const handleUserClick = (user) => {
     setSelectedUser(user);
     setSelectedRoom("");
-  };
-
-  const handleCreateRoomClick = async () => {
-    if (!roomName.trim()) return;
-
-    try {
-      const roomDocRef = doc(db, "chatrooms", "chatrooms");
-
-      const nextRoomNumber = availableRooms.length + 1;
-      const newRoomFieldName = `room${nextRoomNumber}`;
-
-      await updateDoc(roomDocRef, {
-        [newRoomFieldName]: roomName,
-      });
-
-      setAvailableRooms([
-        ...availableRooms,
-        { id: newRoomFieldName, name: roomName },
-      ]);
-
-      setRoomName("");
-    } catch (error) {
-      console.error("Failed to create room: ", error.message);
-    }
-  };
-
-  const handleDeleteRoomClick = (roomId) => {
-    setRoomToDelete(roomId);
-    setIsRoomModalOpen(true);
-  };
-
-  const handleDeleteRoomConfirm = async () => {
-    try {
-      const roomDocRef = doc(db, "chatrooms", "chatrooms");
-
-      await updateDoc(roomDocRef, {
-        [roomToDelete]: deleteField(),
-      });
-
-      setAvailableRooms(
-        availableRooms.filter((room) => room.id !== roomToDelete)
-      );
-      if (selectedRoom === roomToDelete) setSelectedRoom("");
-      setIsRoomModalOpen(false);
-      setRoomToDelete(null);
-    } catch (error) {
-      console.error("Failed to delete room: ", error.message);
-    }
   };
 
   const handleSignOutClick = () => {
@@ -152,11 +95,6 @@ function ChatPage() {
     } catch (error) {
       console.error("Failed to sign out: ", error.message);
     }
-  };
-
-  const handleCloseRoomModal = () => {
-    setIsRoomModalOpen(false);
-    setRoomToDelete(null);
   };
 
   const handleCloseSignOutModal = () => {
@@ -206,38 +144,14 @@ function ChatPage() {
                   <li
                     key={room.id}
                     className={`p-3 mb-2 rounded-lg flex justify-between items-center cursor-pointer ${
-                      room.name === selectedRoom ? "bg-gray-700" : "bg-gray-900"
+                      room.id === selectedRoom ? "bg-gray-700" : "bg-gray-900"
                     } hover:bg-gray-700 transition-colors`}
                     onClick={() => handleRoomClick(room)}
                   >
-                    <span>{room.name}</span>
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleDeleteRoomClick(room.id);
-                      }}
-                      className="text-red-500 hover:text-red-700 focus:outline-none"
-                    >
-                      &times;
-                    </button>
+                    <span>{room.id}</span>
                   </li>
                 ))}
               </ul>
-            </div>
-            <div className="mt-auto">
-              <input
-                type="text"
-                placeholder="New room name"
-                value={roomName}
-                onChange={(e) => setRoomName(e.target.value)}
-                className="w-full p-2 mb-2 border rounded-lg text-black"
-              />
-              <button
-                onClick={handleCreateRoomClick}
-                className="w-full p-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
-              >
-                Create New Room
-              </button>
             </div>
           </div>
         )}
@@ -298,13 +212,6 @@ function ChatPage() {
           </div>
         )}
       </div>
-
-      <ConfirmationModal
-        isOpen={isRoomModalOpen}
-        onClose={handleCloseRoomModal}
-        onConfirm={handleDeleteRoomConfirm}
-        message="Are you sure you want to delete this room?"
-      />
 
       <SignOutConfirmation
         isOpen={isSignOutModalOpen}
