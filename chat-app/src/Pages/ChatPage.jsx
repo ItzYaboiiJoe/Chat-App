@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   doc,
@@ -7,6 +7,7 @@ import {
   query,
   where,
   getDocs,
+  setDoc,
   updateDoc,
 } from "firebase/firestore";
 import { db, auth } from "../firebase";
@@ -19,7 +20,6 @@ function ChatPage() {
   const [username, setUsername] = useState("");
   const [message, setMessage] = useState("");
   const [messages, setMessages] = useState([]);
-  const messagesEndRef = useRef(null); // Reference to the end of the messages list
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -68,7 +68,6 @@ function ChatPage() {
             .map((key) => data[key]);
 
           setMessages(messages);
-          scrollToBottom(); // Scroll to the bottom when messages are updated
         }
       });
 
@@ -99,7 +98,6 @@ function ChatPage() {
       });
 
       setMessage("");
-      scrollToBottom(); // Scroll to the bottom after sending a message
     } catch (error) {
       console.error("Failed to send message: ", error.message);
     }
@@ -120,13 +118,6 @@ function ChatPage() {
 
   const handleCloseSignOutModal = () => {
     setIsSignOutModalOpen(false);
-  };
-
-  // Function to scroll to the bottom of the messages list
-  const scrollToBottom = () => {
-    if (messagesEndRef.current) {
-      messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
-    }
   };
 
   return (
@@ -182,8 +173,6 @@ function ChatPage() {
                     </div>
                   </li>
                 ))}
-                <div ref={messagesEndRef} />{" "}
-                {/* Reference to the end of the messages list */}
               </ul>
             </div>
 
