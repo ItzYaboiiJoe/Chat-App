@@ -1,4 +1,5 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   doc,
   onSnapshot,
@@ -6,17 +7,20 @@ import {
   query,
   where,
   getDocs,
+  setDoc,
   updateDoc,
 } from "firebase/firestore";
 import { db, auth } from "../firebase";
+import SignOutConfirmation from "../Components/SignOutConfirmation";
 
 function ChatPage() {
   const [availableRooms, setAvailableRooms] = useState([]);
   const [selectedRoom, setSelectedRoom] = useState("");
+  const [isSignOutModalOpen, setIsSignOutModalOpen] = useState(false);
   const [username, setUsername] = useState("");
   const [message, setMessage] = useState("");
   const [messages, setMessages] = useState([]);
-  const messagesEndRef = useRef(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const currentUser = auth.currentUser;
@@ -63,7 +67,7 @@ function ChatPage() {
             .filter((key) => key.startsWith("message_"))
             .map((key) => data[key]);
 
-          setMessages((prevMessages) => [...prevMessages, ...messages]);
+          setMessages(messages);
         }
       });
 
@@ -73,7 +77,7 @@ function ChatPage() {
 
   const handleRoomClick = (room) => {
     setSelectedRoom(room.id);
-    setMessages([]); // Clear messages when a new room is selected
+    setMessages([]);
   };
 
   const handleSendMessage = async () => {
@@ -94,17 +98,27 @@ function ChatPage() {
       });
 
       setMessage("");
-      scrollToBottom(); // Scroll to the bottom after sending a message
     } catch (error) {
       console.error("Failed to send message: ", error.message);
     }
   };
 
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  const handleSignOutClick = () => {
+    setIsSignOutModalOpen(true);
   };
 
-  useEffect(scrollToBottom, [messages]);
+  const handleSignOutConfirm = async () => {
+    try {
+      await auth.signOut();
+      navigate("/");
+    } catch (error) {
+      console.error("Failed to sign out: ", error.message);
+    }
+  };
+
+  const handleCloseSignOutModal = () => {
+    setIsSignOutModalOpen(false);
+  };
 
   return (
     <div className="flex flex-col md:flex-row h-screen">
@@ -113,6 +127,12 @@ function ChatPage() {
           <div>
             <h3 className="text-lg font-semibold">Welcome, {username}!</h3>
           </div>
+          <button
+            onClick={handleSignOutClick}
+            className="bg-red-500 text-white px-3 py-1 rounded-lg hover:bg-red-600 transition-colors"
+          >
+            Sign Out
+          </button>
         </div>
 
         <div className="flex-grow flex flex-col">
@@ -141,8 +161,8 @@ function ChatPage() {
             </div>
             <div className="flex-grow p-4 overflow-y-auto bg-gray-50">
               <ul>
-                {messages.map((msg, index) => (
-                  <li key={index} className="mb-3">
+                {messages.map((msg) => (
+                  <li key={msg.id} className="mb-3">
                     <div className="text-sm">
                       <strong>{msg.username}</strong>: {msg.message}
                     </div>
@@ -153,7 +173,6 @@ function ChatPage() {
                     </div>
                   </li>
                 ))}
-                <div ref={messagesEndRef} />
               </ul>
             </div>
 
@@ -181,6 +200,13 @@ function ChatPage() {
           </div>
         )}
       </div>
+
+      <SignOutConfirmation
+        isOpen={isSignOutModalOpen}
+        onClose={handleCloseSignOutModal}
+        onConfirm={handleSignOutConfirm}
+        message="Are you sure you want to sign out?"
+      />
     </div>
   );
 }
