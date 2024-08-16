@@ -7,7 +7,6 @@ import {
   query,
   where,
   getDocs,
-  setDoc,
   updateDoc,
 } from "firebase/firestore";
 import { db, auth } from "../firebase";
@@ -65,7 +64,8 @@ function ChatPage() {
           const data = docSnapshot.data();
           const messages = Object.keys(data)
             .filter((key) => key.startsWith("message_"))
-            .map((key) => data[key]);
+            .map((key) => data[key])
+            .sort((a, b) => a.timestamp.toMillis() - b.timestamp.toMillis());
 
           setMessages(messages);
         }
@@ -100,6 +100,12 @@ function ChatPage() {
       setMessage("");
     } catch (error) {
       console.error("Failed to send message: ", error.message);
+    }
+  };
+
+  const handleKeyPress = (event) => {
+    if (event.key === "Enter") {
+      handleSendMessage();
     }
   };
 
@@ -161,14 +167,14 @@ function ChatPage() {
             </div>
             <div className="flex-grow p-4 overflow-y-auto bg-gray-50">
               <ul>
-                {messages.map((msg) => (
-                  <li key={msg.id} className="mb-3">
+                {messages.map((msg, index) => (
+                  <li key={index} className="mb-3">
                     <div className="text-sm">
                       <strong>{msg.username}</strong>: {msg.message}
                     </div>
                     <div className="text-xs text-gray-500">
                       <em>
-                        {new Date(msg.timestamp?.toDate()).toLocaleString()}
+                        {new Date(msg.timestamp.toMillis()).toLocaleString()}
                       </em>
                     </div>
                   </li>
@@ -183,6 +189,7 @@ function ChatPage() {
                   placeholder="Type your message..."
                   value={message}
                   onChange={(e) => setMessage(e.target.value)}
+                  onKeyDown={handleKeyPress}
                   className="flex-grow p-2 border rounded-lg focus:outline-none focus:ring focus:border-blue-300"
                 />
                 <button
