@@ -16,30 +16,36 @@ function ChatPage() {
   const [availableRooms, setAvailableRooms] = useState([]);
   const [selectedRoom, setSelectedRoom] = useState("");
   const [isSignOutModalOpen, setIsSignOutModalOpen] = useState(false);
-  const [username, setUsername] = useState("");
+  const [username, setUsername] = useState(
+    localStorage.getItem("username") || "Guest"
+  );
   const [message, setMessage] = useState("");
   const [messages, setMessages] = useState([]);
   const navigate = useNavigate();
 
   useEffect(() => {
-    const currentUser = auth.currentUser;
+    if (!localStorage.getItem("username")) {
+      const currentUser = auth.currentUser;
 
-    if (currentUser) {
-      const email = currentUser.email;
+      if (currentUser) {
+        const email = currentUser.email;
 
-      const fetchUsername = async () => {
-        const q = query(collection(db, "users"), where("email", "==", email));
-        const querySnapshot = await getDocs(q);
+        const fetchUsername = async () => {
+          const q = query(collection(db, "users"), where("email", "==", email));
+          const querySnapshot = await getDocs(q);
 
-        if (!querySnapshot.empty) {
-          const userDoc = querySnapshot.docs[0];
-          setUsername(userDoc.data().username);
-        } else {
-          setUsername("Guest");
-        }
-      };
+          if (!querySnapshot.empty) {
+            const userDoc = querySnapshot.docs[0];
+            const fetchedUsername = userDoc.data().username;
+            setUsername(fetchedUsername);
+            localStorage.setItem("username", fetchedUsername);
+          } else {
+            setUsername("Guest");
+          }
+        };
 
-      fetchUsername();
+        fetchUsername();
+      }
     }
   }, []);
 
@@ -64,8 +70,7 @@ function ChatPage() {
           const data = docSnapshot.data();
           const messages = Object.keys(data)
             .filter((key) => key.startsWith("message_"))
-            .map((key) => data[key])
-            .sort((a, b) => a.timestamp.toMillis() - b.timestamp.toMillis());
+            .map((key) => data[key]);
 
           setMessages(messages);
         }
@@ -103,8 +108,8 @@ function ChatPage() {
     }
   };
 
-  const handleKeyPress = (event) => {
-    if (event.key === "Enter") {
+  const handleKeyPress = (e) => {
+    if (e.key === "Enter") {
       handleSendMessage();
     }
   };
@@ -116,6 +121,7 @@ function ChatPage() {
   const handleSignOutConfirm = async () => {
     try {
       await auth.signOut();
+      localStorage.removeItem("username");
       navigate("/");
     } catch (error) {
       console.error("Failed to sign out: ", error.message);
@@ -174,7 +180,7 @@ function ChatPage() {
                     </div>
                     <div className="text-xs text-gray-500">
                       <em>
-                        {new Date(msg.timestamp.toMillis()).toLocaleString()}
+                        {new Date(msg.timestamp?.toDate()).toLocaleString()}
                       </em>
                     </div>
                   </li>
@@ -194,7 +200,7 @@ function ChatPage() {
                 />
                 <button
                   onClick={handleSendMessage}
-                  className="ml-3 px-5 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
+                  className="ml-2 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
                 >
                   Send
                 </button>
