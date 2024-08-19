@@ -70,7 +70,8 @@ function ChatPage() {
           const data = docSnapshot.data();
           const messages = Object.keys(data)
             .filter((key) => key.startsWith("message_"))
-            .map((key) => data[key]);
+            .map((key) => data[key])
+            .sort((a, b) => a.timestamp.seconds - b.timestamp.seconds);
 
           setMessages(messages);
         }
