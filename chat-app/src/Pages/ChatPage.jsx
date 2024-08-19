@@ -37,8 +37,6 @@ function ChatPage() {
           const fetchedUsername = userDoc.data().username;
           setUsername(fetchedUsername);
           localStorage.setItem("username", fetchedUsername);
-        } else {
-          setUsername("Guest");
         }
       };
 
