@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   doc,
@@ -21,6 +21,7 @@ function ChatPage() {
   const [message, setMessage] = useState("");
   const [messages, setMessages] = useState([]);
   const navigate = useNavigate();
+  const messagesEndRef = useRef(null);
 
   useEffect(() => {
     const currentUser = auth.currentUser;
@@ -80,6 +81,16 @@ function ChatPage() {
       return () => unsubscribe();
     }
   }, [selectedRoom]);
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages]);
+
+  const scrollToBottom = () => {
+    if (messagesEndRef.current) {
+      messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
+    }
+  };
 
   const handleRoomClick = (room) => {
     setSelectedRoom(room.id);
@@ -188,6 +199,7 @@ function ChatPage() {
                       </div>
                     </li>
                   ))}
+                  <div ref={messagesEndRef} />
                 </ul>
               </div>
 
