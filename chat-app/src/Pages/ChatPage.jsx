@@ -12,6 +12,7 @@ import {
 import { db, auth } from "../firebase";
 import SignOutConfirmation from "../Components/SignOutConfirmation";
 import SessionManager from "../Components/SessionManager";
+import Logo from "/logo.svg";
 
 function ChatPage() {
   const [availableRooms, setAvailableRooms] = useState([]);
@@ -176,6 +177,10 @@ function ChatPage() {
                 </li>
               ))}
             </ul>
+          </div>
+
+          <div className="mt-auto flex justify-center mb-4">
+            <img src={Logo} alt="Logo" className="h-10" />
           </div>
         </div>
 

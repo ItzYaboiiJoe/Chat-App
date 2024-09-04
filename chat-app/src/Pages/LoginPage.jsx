@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth, analytics } from "../firebase";
 import { logEvent } from "firebase/analytics";
+import Logo from "/logo.svg";
 
 function LoginPage() {
   const [email, setEmail] = useState("");
@@ -32,6 +33,8 @@ function LoginPage() {
       .catch((error) => {
         if (error.code === "auth/invalid-credential") {
           setError("Incorrect email or password. Please try again.");
+        } else {
+          setError("Failed to login. Please try again later.");
         }
       });
   };
@@ -39,6 +42,9 @@ function LoginPage() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100">
       <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-sm">
+        <div className="flex justify-center mb-6">
+          <img src={Logo} alt="Logo" className="h-16" />
+        </div>
         <h2 className="text-2xl font-bold text-center mb-6">Login</h2>
         <form onSubmit={handleSubmit}>
           <div className="mb-4">
@@ -93,13 +99,11 @@ function LoginPage() {
         </form>
         <div className="mt-6 text-center">
           <span className="text-gray-700">Don't have an account?</span>
-          <Link to="/create-account">
-            <button
-              type="button"
-              className="block mt-2 bg-green-500 text-white font-bold py-2 px-4 rounded-md hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500 w-full"
-            >
-              Create Account
-            </button>
+          <Link
+            to="/create-account"
+            className="block mt-2 bg-green-500 text-white font-bold py-2 px-4 rounded-md hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500 w-full text-center"
+          >
+            Create Account
           </Link>
         </div>
       </div>
