@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { signInWithEmailAndPassword } from "firebase/auth";
+import { signInWithEmailAndPassword, signOut } from "firebase/auth";
 import { auth, analytics } from "../firebase";
 import { logEvent } from "firebase/analytics";
 import Logo from "/logo.svg";
@@ -26,12 +26,20 @@ function LoginPage() {
     signInWithEmailAndPassword(auth, email, password)
       .then((userCredential) => {
         const user = userCredential.user;
-        console.log("User signed in:", user);
-        logEvent(analytics, "login", { method: "email" });
-        navigate("/chat-page");
+        if (user.emailVerified) {
+          logEvent(analytics, "login", { method: "email" });
+          navigate("/chat-page");
+        } else {
+          setError("Please verify your email before logging in.");
+          signOut(auth); // Sign out the user immediately if email is not verified
+        }
       })
       .catch((error) => {
-        if (error.code === "auth/invalid-credential") {
+        if (
+          error.code === "auth/invalid-credential" ||
+          error.code === "auth/wrong-password" ||
+          error.code === "auth/user-not-found"
+        ) {
           setError("Incorrect email or password. Please try again.");
         } else {
           setError("Failed to login. Please try again later.");

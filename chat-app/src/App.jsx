@@ -4,10 +4,12 @@ import ForgotPasswordPage from "./Pages/ForgotPasswordPage";
 import ChatPage from "./Pages/ChatPage";
 import SessionManager from "./Components/SessionManager";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import EmailVerificationListener from "./Components/EmailVerificationListener";
 
 function App() {
   return (
     <Router>
+      <EmailVerificationListener />
       <SessionManager />
       <Routes>
         <Route path="/" element={<LoginPage />} />

@@ -1,9 +1,22 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
-import { createUserWithEmailAndPassword } from "firebase/auth";
+import { Link, useNavigate } from "react-router-dom";
+import {
+  createUserWithEmailAndPassword,
+  sendEmailVerification,
+  signOut,
+} from "firebase/auth";
 import { auth, analytics, db } from "../firebase";
 import { logEvent } from "firebase/analytics";
-import { doc, setDoc } from "firebase/firestore";
+import {
+  doc,
+  setDoc,
+  Timestamp,
+  collection,
+  query,
+  where,
+  getDocs,
+} from "firebase/firestore"; // Import necessary Firestore functions
+import Logo from "/logo.svg";
 
 function CreateAccountPage() {
   const [email, setEmail] = useState("");
@@ -19,6 +32,19 @@ function CreateAccountPage() {
       setError("");
       setSuccess("");
 
+      const normalizedUsername = username.toLowerCase();
+
+      // Check if the username already exists in Firestore
+      const usersRef = collection(db, "users");
+      const q = query(usersRef, where("username", "==", normalizedUsername));
+      const querySnapshot = await getDocs(q);
+
+      if (!querySnapshot.empty) {
+        setError("Username already exists. Please choose another one.");
+        return; // Stop the process if the username exists
+      }
+
+      // Create a user in Firebase Auth
       const userCredential = await createUserWithEmailAndPassword(
         auth,
         email,
@@ -26,28 +52,36 @@ function CreateAccountPage() {
       );
       const user = userCredential.user;
 
-      console.log("Account created:", user);
       logEvent(analytics, "sign_up", { method: "email" });
 
+      // Add user data to Firestore with verification status and Firestore Timestamp
       await setDoc(doc(db, "users", user.uid), {
-        username: username,
+        username: normalizedUsername,
         email: user.email,
+        isVerified: false,
+        verificationSentAt: Timestamp.now(),
       });
 
-      console.log("User data stored in Firestore:", {
-        username,
-        email: user.email,
-      });
-
-      setSuccess("Account created successfully!");
+      // Send email verification
+      await sendEmailVerification(user);
+      setSuccess(
+        "Account created successfully! A verification email has been sent. Please verify your email before logging in."
+      );
     } catch (error) {
-      setError(error.message);
+      if (error.code === "auth/email-already-in-use") {
+        setError("This email is already in use. Please use a different email.");
+      } else {
+        setError(error.message);
+      }
     }
   };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100">
       <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-sm">
+        <div className="flex justify-center mb-6">
+          <img src={Logo} alt="Logo" className="h-16" />
+        </div>
         <h2 className="text-2xl font-bold text-center mb-6">Create Account</h2>
         <form onSubmit={handleSubmit}>
           <div className="mb-4">
@@ -84,6 +118,7 @@ function CreateAccountPage() {
               required
             />
           </div>
+
           <div className="mb-4">
             <label
               className="block text-gray-700 text-sm font-bold mb-2"
@@ -101,8 +136,10 @@ function CreateAccountPage() {
               required
             />
           </div>
+
           {error && <p className="text-red-500 text-sm mb-4">{error}</p>}
           {success && <p className="text-green-500 text-sm mb-4">{success}</p>}
+
           <div className="flex items-center justify-between">
             <button
               type="submit"

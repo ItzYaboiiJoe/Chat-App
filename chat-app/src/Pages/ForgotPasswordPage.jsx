@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { getAuth, sendPasswordResetEmail } from "firebase/auth";
+import Logo from "/logo.svg";
 
 function ForgotPasswordPage() {
   const [email, setEmail] = useState("");
@@ -32,6 +33,9 @@ function ForgotPasswordPage() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100">
       <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-sm">
+        <div className="flex justify-center mb-6">
+          <img src={Logo} alt="Logo" className="h-16" />
+        </div>
         <h2 className="text-2xl font-bold text-center mb-6">Forgot Password</h2>
         <form onSubmit={handleSubmit}>
           <div className="mb-4">
