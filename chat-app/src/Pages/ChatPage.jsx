@@ -13,6 +13,7 @@ import { db, auth } from "../firebase";
 import SignOutConfirmation from "../Components/SignOutConfirmation";
 import SessionManager from "../Components/SessionManager";
 import Logo from "/logo.svg";
+import { motion } from "framer-motion"; // Import Framer Motion
 
 function ChatPage() {
   const [availableRooms, setAvailableRooms] = useState([]);
@@ -220,7 +221,13 @@ function ChatPage() {
               <div className="flex-grow p-4 overflow-y-auto bg-gray-50">
                 <ul>
                   {messages.map((msg, index) => (
-                    <li key={index} className="mb-3">
+                    <motion.li
+                      key={index}
+                      className="mb-3"
+                      initial={{ opacity: 0 }} // Initial state
+                      animate={{ opacity: 1 }} // Animation state
+                      transition={{ duration: 1 }} // Animation duration
+                    >
                       <div className="text-sm">
                         <strong>{msg.username}</strong>: {msg.message}
                       </div>
@@ -229,7 +236,7 @@ function ChatPage() {
                           {new Date(msg.timestamp?.toDate()).toLocaleString()}
                         </em>
                       </div>
-                    </li>
+                    </motion.li>
                   ))}
                   <div ref={messagesEndRef} />
                 </ul>
