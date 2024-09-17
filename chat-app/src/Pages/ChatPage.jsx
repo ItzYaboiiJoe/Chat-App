@@ -214,9 +214,9 @@ function ChatPage() {
             <>
               <div className="bg-gray-100 p-4 border-b">
                 <h2 className="text-xl font-semibold">{selectedRoom}</h2>
-                {typingStatus && (
+                {/* {typingStatus && (
                   <p className="text-sm text-gray-500">{typingStatus}</p>
-                )}
+                )} */}
               </div>
               <div className="flex-grow p-4 overflow-y-auto bg-gray-50">
                 <ul>
@@ -241,7 +241,9 @@ function ChatPage() {
                   <div ref={messagesEndRef} />
                 </ul>
               </div>
-
+              {typingStatus && (
+                <p className="text-sm text-gray-500">{typingStatus}</p>
+              )}
               <div className="p-3 bg-gray-100 border-t flex-none">
                 <div className="flex items-center">
                   <input
