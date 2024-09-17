@@ -21,6 +21,8 @@ function ChatPage() {
   const [username, setUsername] = useState("Guest");
   const [message, setMessage] = useState("");
   const [messages, setMessages] = useState([]);
+  const [typingStatus, setTypingStatus] = useState(""); // Typing status for the room
+  const [isTyping, setIsTyping] = useState(false); // Local typing state
   const navigate = useNavigate();
   const messagesEndRef = useRef(null);
 
@@ -76,6 +78,7 @@ function ChatPage() {
             .sort((a, b) => a.timestamp.seconds - b.timestamp.seconds);
 
           setMessages(messages);
+          setTypingStatus(data.typingStatus || ""); // Get typing status from Firestore
         }
       });
 
@@ -113,9 +116,11 @@ function ChatPage() {
           message: message,
           timestamp: new Date(),
         },
+        typingStatus: "", // Reset typing status after sending message
       });
 
       setMessage("");
+      setIsTyping(false); // Reset typing state
     } catch (error) {
       console.error("Failed to send message: ", error.message);
     }
@@ -125,6 +130,25 @@ function ChatPage() {
     if (e.key === "Enter") {
       handleSendMessage();
     }
+  };
+
+  const handleTyping = async (e) => {
+    setMessage(e.target.value);
+
+    if (!isTyping) {
+      setIsTyping(true);
+      await updateDoc(doc(db, "chatrooms", selectedRoom), {
+        typingStatus: `${username} is typing...`,
+      });
+    }
+
+    // Throttle typing indicator reset
+    setTimeout(async () => {
+      setIsTyping(false);
+      await updateDoc(doc(db, "chatrooms", selectedRoom), {
+        typingStatus: "",
+      });
+    }, 3000); // Set typing status to stop after 3 seconds of inactivity
   };
 
   const handleSignOutClick = () => {
@@ -189,6 +213,9 @@ function ChatPage() {
             <>
               <div className="bg-gray-100 p-4 border-b">
                 <h2 className="text-xl font-semibold">{selectedRoom}</h2>
+                {typingStatus && (
+                  <p className="text-sm text-gray-500">{typingStatus}</p>
+                )}
               </div>
               <div className="flex-grow p-4 overflow-y-auto bg-gray-50">
                 <ul>
@@ -214,7 +241,7 @@ function ChatPage() {
                     type="text"
                     placeholder="Type your message..."
                     value={message}
-                    onChange={(e) => setMessage(e.target.value)}
+                    onChange={handleTyping}
                     onKeyDown={handleKeyPress}
                     className="flex-grow p-2 border rounded-lg focus:outline-none focus:ring focus:border-blue-300"
                   />
