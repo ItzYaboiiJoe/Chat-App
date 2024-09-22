@@ -137,13 +137,13 @@ function LoginPage() {
                 <motion.button
                   type="submit"
                   className="bg-blue-500 text-white font-bold py-2 px-4 rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  whileHover={{ scale: 1.05 }}
+                  whileHover={{ scale: 1.03 }}
                   whileTap={{ scale: 0.95 }}
                 >
                   Login
                 </motion.button>
                 <motion.div
-                  whileHover={{ scale: 1.05 }}
+                  whileHover={{ scale: 1.03 }}
                   whileTap={{ scale: 0.95 }}
                 >
                   <Link
@@ -176,15 +176,42 @@ function LoginPage() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 1, duration: 0.5 }}
         >
-          <span className="text-gray-700">Don't have an account?</span>
-          <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-            <Link
-              to="/create-account"
-              className="block mt-2 bg-green-500 text-white font-bold py-2 px-4 rounded-md hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500 w-full text-center"
+          <div className="mt-6 text-center">
+            <span className="text-gray-700">Don't have an account?</span>
+            <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.95 }}>
+              <Link
+                to="/create-account"
+                className="block mt-2 bg-green-500 text-white font-bold py-2 px-4 rounded-md hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500 w-full text-center"
+              >
+                Create Account
+              </Link>
+            </motion.div>
+          </div>
+
+          <div className="mt-4 text-center">
+            <a
+              href="https://www.apple.com/app-store/"
+              target="_blank"
+              rel="noopener noreferrer"
             >
-              Create Account
-            </Link>
-          </motion.div>
+              <img
+                src="/App-Store.png"
+                alt="Download on the App Store"
+                className="mx-auto cursor-pointer w-40"
+              />
+            </a>
+          </div>
+
+          <div className="mt-4 text-center">
+            <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.95 }}>
+              <Link
+                to="/terms-and-policy"
+                className="text-sm text-blue-500 hover:underline"
+              >
+                Terms & Privacy Policy
+              </Link>
+            </motion.div>
+          </div>
         </motion.div>
       </motion.div>
     </motion.div>

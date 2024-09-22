@@ -12,7 +12,11 @@ function SessionManager() {
       .setPersistence(browserSessionPersistence)
       .then(() => {
         const unsubscribe = auth.onAuthStateChanged((user) => {
-          const publicPaths = ["/forgot-password", "/create-account"];
+          const publicPaths = [
+            "/forgot-password",
+            "/create-account",
+            "/terms-and-policy",
+          ];
 
           if (!user && !publicPaths.includes(location.pathname)) {
             navigate("/");

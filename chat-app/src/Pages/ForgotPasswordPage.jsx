@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { getAuth, sendPasswordResetEmail } from "firebase/auth";
 import Logo from "/logo.svg";
-import { motion } from "framer-motion"; // Import framer-motion
+import { motion } from "framer-motion";
 
 function ForgotPasswordPage() {
   const [email, setEmail] = useState("");
@@ -96,12 +96,12 @@ function ForgotPasswordPage() {
             <motion.button
               type="submit"
               className="bg-blue-500 text-white font-bold py-2 px-4 rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
-              whileHover={{ scale: 1.05 }}
+              whileHover={{ scale: 1.03 }}
               whileTap={{ scale: 0.95 }}
             >
               Send
             </motion.button>
-            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+            <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.95 }}>
               <Link to="/">
                 <button
                   type="button"

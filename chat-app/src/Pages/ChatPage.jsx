@@ -243,7 +243,7 @@ function ChatPage() {
               </div>
 
               {typingStatus && (
-                <p className="text-sm text-gray-500">{typingStatus}</p>
+                <p className="text-sm text-gray-500 pl-4">{typingStatus}</p>
               )}
 
               <div className="p-3 bg-gray-100 border-t flex-none">

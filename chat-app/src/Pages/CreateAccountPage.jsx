@@ -15,9 +15,9 @@ import {
   query,
   where,
   getDocs,
-} from "firebase/firestore"; // Import necessary Firestore functions
+} from "firebase/firestore";
 import Logo from "/logo.svg";
-import { motion } from "framer-motion"; // Import framer-motion
+import { motion } from "framer-motion";
 
 function CreateAccountPage() {
   const [email, setEmail] = useState("");
@@ -180,12 +180,12 @@ function CreateAccountPage() {
             <motion.button
               type="submit"
               className="bg-green-500 text-white font-bold py-2 px-4 rounded-md hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500"
-              whileHover={{ scale: 1.05 }}
+              whileHover={{ scale: 1.03 }}
               whileTap={{ scale: 0.95 }}
             >
               Create Account
             </motion.button>
-            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+            <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.95 }}>
               <Link to="/" className="text-sm text-blue-500 hover:underline">
                 Back to Login
               </Link>
