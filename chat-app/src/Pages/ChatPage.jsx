@@ -180,7 +180,7 @@ function ChatPage() {
       <div className="flex h-screen">
         {/* Sidebar */}
         <div
-          className={`fixed z-10 inset-y-0 left-0 w-64 bg-gray-800 text-white p-3 transition-transform transform ${
+          className={`fixed z-10 inset-y-0 left-0 w-72 md:w-96 bg-gray-800 text-white p-3 transition-transform transform ${
             isSidebarOpen ? "translate-x-0" : "-translate-x-full"
           } md:translate-x-0 md:relative md:flex md:flex-col`}
         >
