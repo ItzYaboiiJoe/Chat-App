@@ -5,7 +5,7 @@ import Logo from "/logo.svg";
 function TermsAndPolicyPage() {
   return (
     <motion.div
-      className="min-h-screen flex items-center justify-center bg-gray-100"
+      className="min-h-screen flex items-center justify-center bg-gray-200"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.5 }}

@@ -212,13 +212,13 @@ function ChatPage() {
         <div className="w-full md:w-3/4 flex flex-col h-full">
           {selectedRoom ? (
             <>
-              <div className="bg-gray-100 p-4 border-b">
+              <div className="bg-gray-200 p-4 border-b">
                 <h2 className="text-xl font-semibold">{selectedRoom}</h2>
                 {/* {typingStatus && (
                   <p className="text-sm text-gray-500">{typingStatus}</p>
                 )} */}
               </div>
-              <div className="flex-grow p-4 overflow-y-auto bg-gray-50">
+              <div className="flex-grow p-4 overflow-y-auto bg-gray-100">
                 <ul>
                   {messages.map((msg, index) => (
                     <motion.li
@@ -246,7 +246,7 @@ function ChatPage() {
                 <p className="text-sm text-gray-500 pl-4">{typingStatus}</p>
               )}
 
-              <div className="p-3 bg-gray-100 border-t flex-none">
+              <div className="p-3 bg-gray-200 border-t flex-none">
                 <div className="flex items-center">
                   <input
                     type="text"
