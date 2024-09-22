@@ -26,6 +26,7 @@ function ChatPage() {
   const [typingStatus, setTypingStatus] = useState("");
   const [isTyping, setIsTyping] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false); // Sidebar toggle state for mobile
+  const [roomKey, setRoomKey] = useState(""); // This key is used for forcing a re-render
   const navigate = useNavigate();
   const messagesEndRef = useRef(null);
 
@@ -90,7 +91,7 @@ function ChatPage() {
 
       return () => unsubscribe();
     }
-  }, [selectedRoom]);
+  }, [selectedRoom, roomKey]);
 
   useEffect(() => {
     scrollToBottom();
@@ -103,9 +104,13 @@ function ChatPage() {
   };
 
   const handleRoomClick = (room) => {
-    setSelectedRoom(room.id);
-    setMessages([]);
-    setIsSidebarOpen(false); // Close sidebar on room selection in mobile
+    // If the room is already selected, force re-render by changing the roomKey
+    if (room.id === selectedRoom) {
+      setRoomKey(Date.now().toString()); // Change roomKey to force re-render
+    } else {
+      setSelectedRoom(room.id);
+    }
+    setIsSidebarOpen(false); // Close sidebar on mobile
   };
 
   const handleSendMessage = async () => {
