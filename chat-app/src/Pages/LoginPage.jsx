@@ -188,7 +188,7 @@ function LoginPage() {
             </motion.div>
           </div>
 
-          <div className="mt-4 text-center">
+          <div className="mt-4 text-center w-fit mx-auto">
             <a
               href="https://www.apple.com/app-store/"
               target="_blank"
@@ -197,12 +197,12 @@ function LoginPage() {
               <img
                 src="/App-Store.png"
                 alt="Download on the App Store"
-                className="mx-auto cursor-pointer w-40"
+                className="mx-auto cursor-pointer w-40 hover:opacity-75 transition-all"
               />
             </a>
           </div>
 
-          <div className="mt-4 text-center">
+          <div className="mt-4 text-center w-fit mx-auto">
             <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.95 }}>
               <Link
                 to="/terms-and-policy"
