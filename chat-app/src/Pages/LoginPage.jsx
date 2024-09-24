@@ -190,7 +190,7 @@ function LoginPage() {
 
           <div className="mt-4 text-center w-fit mx-auto">
             <a
-              href="https://www.apple.com/app-store/"
+              href="https://apps.apple.com/us/app/gossip-rooms/id6623892890"
               target="_blank"
               rel="noopener noreferrer"
             >
