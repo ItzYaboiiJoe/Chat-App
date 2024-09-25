@@ -4,10 +4,43 @@
     <meta charset="UTF-8" />
     <link rel="icon" href="/logo.svg" type="image/svg+xml" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>GossipRooms</title>
+
+    <!-- Optimized Title for SEO -->
+    <title>
+      GossipRooms - Chat Rooms for anonymous users to gossip together
+    </title>
+
+    <!-- Meta Description for SEO -->
+    <meta
+      name="description"
+      content="Join GossipRooms to chat about celebrity gossip, entertainment news, and trending topics. Create an account or log in to start chatting now!"
+    />
+
+    <!-- Canonical URL to prevent duplicate content -->
+    <link rel="canonical" href="https://gossiprooms.app" />
+
+    <!-- Preload main stylesheet -->
+    <link rel="preload" href="/src/styles/main.css" as="style" />
+
+    <!-- Add your stylesheets -->
+    <link rel="stylesheet" href="/src/styles/main.css" />
+
+    <!-- Schema Markup for SEO -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "WebSite",
+        "name": "GossipRooms",
+        "url": "https://gossiprooms.app",
+        "description": "A chat room platform for users to discuss celebrity gossip, entertainment, and trending topics.",
+        "logo": "https://gossiprooms.app/logo.svg"
+      }
+    </script>
   </head>
   <body>
     <div id="root"></div>
+
+    <!-- Script to load the React app -->
     <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>
